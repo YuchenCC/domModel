@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>JS Bin</title>
+</head>
+<style>
+  ul>li{
+    border:1px solid;
+    
+  }
+  .hi{
+    background:red;
+    opacity:0.5;
+  }
+  .error{
+    border:1px solid blue;
+  }
+</style>
+<body>
+  <ul>
+    <li class='error'>1</li>
+    <li class='error'>2</li>
+    <li class='error'>3</li>
+    <li class='error'>4</li>
+  </ul>
+</body>
+<script>
+    window.$ = function (string){
+  let array = []
+  if (typeof string === 'string'){
+    let items = document.querySelectorAll(string)
+    for(let i=0;i<items.length;i++){
+      array.push(items[i]) 
+    }
+    console.log(items)
+  }
+  else if(string instanceof Element){
+        array.push(string)
+    }
+  else if(string instanceof Array){
+        for(var i=0;i<string.length; i++){
+            if(!(string[i] instanceof Element)){
+                continue
+            }
+            array.push(string[i])
+        }
+    }
+  array.on = function (eventType,fn){
+    for(let i=0;i<array.length;i++){
+      array[i].addEventListener(eventType,fn)
+    }    
+  }
+  array.addClass = function(className){
+    for(let i=0;i<array.length;i++){
+      array[i].classList.add(className)
+    }
+    return array
+  }
+  array.removeClass = function(className){
+     for(let i=0;i<array.length;i++){
+      array[i].classList.remove(className)
+     }
+     return array
+  }
+  
+  array.text = function(value){
+     if(value !== undefined){
+          for(var i=0;i<array.length;i++){
+            array[i].textContent = value
+          }
+          return array  
+        }else{
+            let result = []
+            for(var i=0;i<array.length;i++){
+              result.push(array[i].textContent)
+              }
+            return result
+            }
+    }
+   array.get = function(getNumber){
+    return array[getNumber]
+  }
+
+  array.siblings = function(){
+     let children = array[0].parentNode.children
+     let resultArray = []
+     for(var i=0;i<children.length; i++){
+        if(children[i] !== array[0]){
+             resultArray.push(children[i])
+        }
+     }
+     let items = $(resultArray)
+     console.log(items)
+     items.previousSelection = array
+     console.log(items)
+     return items
+  }
+  
+  array.end = function(){
+    return array.previousSelection
+  }
+  return array
+}
+</script>
+<script>
+console.assert(typeof $ === 'function')
+    let items = $('li')
+    console.assert(items.on !== undefined)
+
+    items.on('click', function(){
+      console.log('click')
+    })
+
+    console.assert(items.addClass('hi') === items)
+    items.addClass('hi').removeClass('error')
+
+    items.text('你好')
+
+    let textList = items.text() // ['你好'x4]
+
+    console.assert(items.addEventListener === undefined)
+
+    let item = items.get(0)
+    console.log(item)
+    let $item = $(item) // array
+
+    console.assert(item.tagName === 'LI')
+    console.assert(item.addEventListener !== undefined)
+
+    console.assert(item === items[0])
+    console.assert(item.siblings === undefined)
+    console.assert($item.siblings !== undefined)
+
+    // $item 第1个 li
+    // $item.siblings() 返回它的兄弟
+
+    console.assert($item[0] === item)
+
+    let $li = $('li:nth-child(2)') // array
+    $li.siblings().addClass('error')
+    console.assert($li.siblings().previousSelection === $li)
+    console.assert($li.siblings().end() === $li.siblings().previousSelection )
+
+    $li.siblings().removeClass('error').end()
+       .addClass('error')
+
+
+
+    console.assert(typeof item.on === 'undefined')
+    console.assert(typeof $item.on === 'function')
+
+    console.log('运行完毕')   
+</script>  
+
+</html>
